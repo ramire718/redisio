@@ -44,7 +44,10 @@ end
 
 template '/usr/lib/systemd/system/redis-sentinel@.service' do
   source    'redis-sentinel@.service'
-  variables({ :bin_path => node['redisio']['bin_path'] })
+  variables({
+    :bin_path => node['redisio']['bin_path'],
+    :limit_nofile => redis['default_settings']['maxclients'] + 32
+  })
   only_if   { node['redisio']['job_control'] == 'systemd' }
 end
 
