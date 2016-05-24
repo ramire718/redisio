@@ -116,6 +116,14 @@ def configure
         masters = [current['masters']].flatten
       end
 
+      #Load password for use with requirepass from data bag if needed
+      if current['data_bag_name'] && current['data_bag_item'] && current['data_bag_key']
+        bag = Chef::EncryptedDataBagItem.load(current['data_bag_name'], current['data_bag_item'])
+        masters.each do |master|
+          master['auth-pass'] = bag[current['data_bag_key']]
+        end
+      end
+      
       # merge in default values to each sentinel hash
       masters_with_defaults = []
       masters.each do |current_sentinel_master|
